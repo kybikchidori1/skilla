@@ -40,77 +40,109 @@ const Course = ({ courseData }: any): JSX.Element => {
 };
 
 const Courses = ({ coursesData }: CoursesProps): JSX.Element => {
-    const [data, setData] = useState(coursesData);
-    const [userValue, setUserValue] = useState<(null | number)[]>([null, null]);
+    const [defaultData, setDefaultData] = useState<any>(coursesData);
+    const [filteredData, setFilteredData] = useState<any>(null);
+    const [userValueFrom, setUserValueFrom] = useState<null | number>(null);
+    const [userValueTo, setUserValueTo] = useState<null | number>(1000);
 
     const setValue = (event: any) => {
         const value = event.target.value;
         const name = event.target.name;
 
-        setUserValue((preState) => {
-            if (name === "value_1") {
-                return [value, preState[1]];
-            }
-            return [preState[0], value];
-        });
+        if (name === "from") {
+            setUserValueFrom(value);
+        } else {
+            setUserValueTo(value);
+        }
     };
 
     useEffect(() => {
-        // if (!userValue[0] && !userValue[1]) return;
+        if (!userValueFrom && !userValueTo) return setFilteredData(defaultData); // Проверка на пустоту
 
-        let currentData = coursesData;
-        console.log("currentData", currentData);
+        if (userValueFrom && userValueFrom <= 0) {
+            setUserValueFrom(null);
+        }
+        if (userValueTo && userValueTo <= 0) {
+            setUserValueTo(null);
+        }
 
-        const value_1 = userValue[0];
-        const value_2 = userValue[1];
+        let currentData = defaultData;
 
-        if (value_1) {
+        if (userValueFrom) {
             currentData = currentData.filter((item: any) => {
-                if (item.prices[1] && value_1 > item.prices[1]) {
-                    console.log("HERE");
+                if (item.prices[1] && userValueFrom > item.prices[1])
                     return false;
-                }
+
                 if (!item.prices[0]) return true;
 
-                return item.prices[0] >= value_1;
+                return item.prices[0] >= userValueFrom;
             });
         }
 
-        if (value_2) {
+        if (userValueTo) {
             currentData = currentData.filter((item: any) => {
-                return item.prices[0] <= value_2;
+                if (userValueTo < item.prices[0]) return false;
+                return item.prices[1] <= userValueTo;
             });
         }
 
-        setData(currentData);
+        setFilteredData(currentData);
 
         console.log("currentData", currentData);
-    }, [userValue]);
+    }, [defaultData, userValueFrom, userValueTo]);
 
-    return (
+    const dataSort = (type: "Up" | "Down") => {
+        const newDAta = [...defaultData].sort((a: any, b: any) => {
+            const value_1 = a.prices[1]
+                ? a.prices[1]
+                : a.prices[0]
+                ? a.prices[0]
+                : 0;
+
+            const value_2 = b.prices[1]
+                ? b.prices[1]
+                : b.prices[0]
+                ? b.prices[0]
+                : 0;
+
+            if (type === "Up") {
+                return value_2 - value_1;
+            } else {
+                return value_1 - value_2;
+            }
+        });
+
+        setDefaultData(newDAta);
+    };
+
+    return filteredData ? (
         <div>
             <div className="course__title">Выберите диапозон</div>
             <div className="course__range">
                 От{" "}
                 <input
-                    name="value_1"
+                    name="from"
                     type="number"
-                    value={userValue[0] ?? ""}
+                    value={userValueFrom ?? "0"}
                     onChange={setValue}
                 />
                 до
                 <input
-                    name="value_2"
+                    name="to"
                     type="number"
-                    value={userValue[1] ?? ""}
+                    value={userValueTo ?? "0"}
                     onChange={setValue}
                 />
             </div>
-
-            {data.map((courseItem) => (
+            <div className="course__title">Отсортировать по цене</div>
+            <button onClick={() => dataSort("Up")}>Дорогие сверху</button>
+            <button onClick={() => dataSort("Down")}>Дешевые сверху</button>
+            {filteredData.map((courseItem: any) => (
                 <Course courseData={courseItem} />
             ))}
         </div>
+    ) : (
+        <div>Загрузка</div>
     );
 };
 
