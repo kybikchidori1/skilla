@@ -1,16 +1,11 @@
-import { useState } from "react";
-import "./App.css";
-import Courses from "./component";
-import { courses } from "./data";
+import "./App.scss";
+import Courses from "./components/Courses";
+import { courses } from "./lib/data";
 
 function App() {
-    const [userValues, setUserValues] = useState([null, null]);
-
     return (
         <div className="App">
-            <header className="App-header">
-                <p>Тестовое UniPage</p>
-            </header>
+            <header className="App-header">Тестовое UniPage</header>
             <Courses coursesData={courses} />
         </div>
     );
