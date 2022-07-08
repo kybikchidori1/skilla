@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/skilla/static/css/main.e4a06063.css",
+    "main.js": "/skilla/static/js/main.cc4af3b1.js",
+    "index.html": "/skilla/index.html",
+    "main.e4a06063.css.map": "/skilla/static/css/main.e4a06063.css.map",
+    "main.cc4af3b1.js.map": "/skilla/static/js/main.cc4af3b1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e4a06063.css",
+    "static/js/main.cc4af3b1.js"
+  ]
+}
